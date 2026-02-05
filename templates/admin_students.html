@@ -1,0 +1,22 @@
+<h2>Students</h2>
+
+<table border="1">
+
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Active</th>
+    <th>Action</th>
+</tr>
+
+{% for s in students %}
+<tr>
+    <td>{{ s.name }}</td>
+    <td>{{ s.email }}</td>
+    <td>{{ s.is_active }}</td>
+    <td>
+        <a href="/admin/student/{{ s.id }}/deactivate">Deactivate</a>
+    </td>
+</tr>
+{% endfor %}
+</table>

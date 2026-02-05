@@ -1,0 +1,23 @@
+<h2>Placement Drives</h2>
+
+<table border="1">
+
+<tr>
+    <th>Title</th>
+    <th>Company</th>
+    <th>Approved</th>
+    <th>Action</th>
+</tr>
+
+{% for j in jobs %}
+<tr>
+    <td>{{ j.title }}</td>
+    <td>{{ j.company.name }}</td>
+    <td>{{ j.approved }}</td>
+    <td>
+        <a href="/admin/job/{{ j.id }}/approve">Approve</a>
+    </td>
+</tr>
+
+{% endfor %}
+</table>

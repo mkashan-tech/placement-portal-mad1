@@ -27,6 +27,7 @@ class Company(db.Model):
     industry = db.Column(db.String(100))
 
     password = db.Column(db.String(200), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
 
 
     jobs = db.relationship('Job', backref='company', lazy=True)
@@ -48,6 +49,9 @@ class Student(db.Model):
     resume = db.Column(db.String(200))
     skills = db.Column(db.String(300))
 
+    is_active = db.Column(db.Boolean, default=True)
+    contact = db.Column(db.String(15))
+
 
 # ------------------
 # Job / Placement Drive
@@ -61,6 +65,8 @@ class Job(db.Model):
     status = db.Column(db.String(50), default='Pending')
     salary = db.Column(db.Integer)
     deadline = db.Column(db.Date)
+
+    approved = db.Column(db.Boolean, default=False)
 
 
     company_id = db.Column(
