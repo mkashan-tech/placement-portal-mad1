@@ -88,7 +88,78 @@ def company_login():
 def company_dashboard():
     if session.get('role') != 'company':
         return redirect(url_for('company_login'))
-    return "Company Dashboard"
+    
+
+    company_id = session.get('user_id')
+    jobs = Job.query.filter_by(company_id=company_id).all()
+
+    return render_template('company_dashboard.html', jobs=jobs)
+
+
+
+@app.route('/company/job/create', methods=['GET', 'POST'])
+def create_job():
+    if session.get('role') != 'company':
+        return redirect(url_for('company_login'))
+    
+    if request.method == 'POST':
+        job = Job(
+            title = request.form['title'],
+            description = request.form['description'],
+            salary = request.form['salary'],
+            company_id = session.get('user_id'),
+            status='Active'
+        ) 
+        db.session.add(job)
+        db.session.commit()
+
+        return redirect(url_for('company_dashboard'))
+    return render_template('create_job.html')
+
+@app.route('/company/job/<int:job_id>/applications')
+def job_applications(job_id):
+    if session.get('role') != 'company':
+        return redirect(url_for('company_login'))
+    
+    applications = Application.query.filter_by(job_id=job_id).all()
+
+    return render_template(
+        'company_applications.html',
+        applications=applications
+    )
+
+# Update the Application Status
+@app.route('/company/application/<int:id>/shortlist')
+def shortlist_application(id):
+    app_obj = Application.query.get(id)
+    app_obj.status = "Shortlisted"
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/company/application/<int:id>/reject')
+def reject_application(id):
+    app_obj = Application.query.get(id)
+    app_obj.status = "Rejected"
+    db.session.commit()
+    return redirect(request.referrer)
+
+@app.route('/company/application/<int:id>/select')
+def select_application(id):
+    app_obj = Application.query.get(id)
+    app_obj.status = "Selected"
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+# Close the job posting
+@app.route('/company/job/<int:id>/close')
+def close_job(id):
+    job = Job.query.get(id)
+    job.status = "Closed"
+    db.session.commit()
+    return redirect(url_for('company_dashboard'))
+
 
 
 # ----------------------- STUDENT AUTH --------------------

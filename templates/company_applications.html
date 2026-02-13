@@ -1,0 +1,21 @@
+<h2>Applications</h2>
+
+<table border="1">
+<tr>
+    <th>Student</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for a in applications %}
+<tr>
+    <td>{{ a.student.name }}</td>
+    <td>{{ a.status }}</td>
+    <td>
+        <a href="/company/application/{{ a.id }}/shortlist">Shortlist</a>
+        <a href="/company/application/{{ a.id }}/reject">Reject</a>
+        <a href="/company/application/{{ a.id }}/select">Select</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
