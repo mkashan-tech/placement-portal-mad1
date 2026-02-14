@@ -46,8 +46,11 @@ class Student(db.Model):
 
     applications = db.relationship('Application', backref='student', lazy=True)
 
+    education = db.Column(db.String(200))
     resume = db.Column(db.String(200))
     skills = db.Column(db.String(300))
+
+    
 
     is_active = db.Column(db.Boolean, default=True)
     contact = db.Column(db.String(15))

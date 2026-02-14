@@ -1,0 +1,36 @@
+<h2>Student Dashboard</h2>
+
+<h3>Available Jobs</h3>
+<table border="1">
+<tr>
+    <th>Title</th>
+    <th>Company</th>
+    <th>Action</th>
+</tr>
+
+{% for job in jobs %}
+<tr>
+    <td>{{ job.title }}</td>
+    <td>{{ job.company.name }}</td>
+    <td>
+        <a href="/student/apply/{{ job.id }}">Apply</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+
+<h3>My Applications</h3>
+<table border="1">
+<tr>
+    <th>Job</th>
+    <th>Status</th>
+</tr>
+
+{% for a in applications %}
+<tr>
+    <td>{{ a.job.title }}</td>
+    <td>{{ a.status }}</td>
+</tr>
+{% endfor %}
+</table>

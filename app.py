@@ -166,6 +166,14 @@ def close_job(id):
 @app.route('/student/register', methods=['GET', 'POST'])
 def student_register():
     if request.method == 'POST':
+        existing = Student.query.filter_by(
+            email = request.form['email']
+        ).first()
+
+        if existing:
+            return "Email already registered."
+
+
         student = Student(
             name=request.form['name'],
             email=request.form['email'],
@@ -197,7 +205,62 @@ def student_login():
 def student_dashboard():
     if session.get('role') != 'student':
         return redirect(url_for('student_login'))
-    return "Student Dashboard"
+    
+    jobs = Job.query.filter_by(approved=True, status="Active").all()
+
+    applications = Application.query.filter_by(
+        student_id=session.get('user_id')
+    ).all()
+
+    return render_template(
+        'student_dashboard.html',
+        jobs=jobs,
+        applications=applications
+    )
+
+# Apply for Job (Core Feature)
+@app.route('/student/apply/<int:job_id>')
+def apply_job(job_id):
+    if session.get('role') != 'student':
+        return redirect(url_for('student_login'))
+    
+    student_id = session.get('user_id')
+
+    existing = Application.query.filter_by(
+        student_id=student_id,
+        job_id=job_id
+    ).first()
+
+    if not existing:
+        app_obj = Application(
+            student_id=student_id,
+            job_id=job_id
+        )
+        db.session.add(app_obj)
+        db.session.commit()
+
+    return redirect(url_for('student_dashboard'))
+
+
+# Student_Profile_Update
+@app.route('/student/profile', methods=['GET', 'POST'])
+def student_profile():
+    if session.get('role') != 'student':
+        return redirect(url_for('student_login'))
+    
+    student = Student.query.get(session.get('user_id'))
+
+    if request.method == 'POST':
+        student.education = request.form['education']
+        student.skills = request.form['skills']
+        student.resume = request.form['resume']
+        db.session.commit()
+
+        return redirect(url_for('student_dashboard'))
+    
+    return render_template('student_profile.html', student=student)
+
+
 
 
 # ------------------ ADMIN MANAGEMENT -----------------
