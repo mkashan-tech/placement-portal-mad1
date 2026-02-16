@@ -1,0 +1,17 @@
+<h2>All Applications</h2>
+
+<table border="1">
+<tr>
+    <th>Student</th>
+    <th>Job</th>
+    <th>Status</th>
+</tr>
+
+{% for a in applications %}
+<tr>
+    <td>{{ a.student.name }}</td>
+    <td>{{ a.job.title }}</td>
+    <td>{{ a.status }}</td>
+</tr>
+{% endfor %}
+</table>

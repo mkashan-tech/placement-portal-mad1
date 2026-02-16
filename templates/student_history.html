@@ -1,0 +1,17 @@
+<h2>Application History</h2>
+
+<table border="1">
+<tr>
+    <th>Job</th>
+    <th>Company</th>
+    <th>Status</th>
+</tr>
+
+{% for a in applications %}
+<tr>
+    <td>{{ a.job.title }}</td>
+    <td>{{ a.job.company.name }}</td>
+    <td>{{ a.status }}</td>
+</tr>
+{% endfor %}
+</table>

@@ -102,6 +102,10 @@ def create_job():
     if session.get('role') != 'company':
         return redirect(url_for('company_login'))
     
+    company = Company.query.get(session.get('user_id'))
+    if not company.approved:
+        return "Company not approved by admin."
+    
     if request.method == 'POST':
         job = Job(
             title = request.form['title'],
@@ -234,7 +238,8 @@ def apply_job(job_id):
     if not existing:
         app_obj = Application(
             student_id=student_id,
-            job_id=job_id
+            job_id=job_id,
+            status="Applied"
         )
         db.session.add(app_obj)
         db.session.commit()
@@ -259,6 +264,22 @@ def student_profile():
         return redirect(url_for('student_dashboard'))
     
     return render_template('student_profile.html', student=student)
+
+
+# A dedicated history page.
+@app.route('/student/history')
+def student_history():
+    if session.get('role') != "student":
+        return redirect(url_for('student_login'))
+    
+    applications = Application.query.filter_by(
+        student_id=session.get('user_id')
+    ).all()
+
+    return render_template(
+        'student_history.html',
+        applications=applications 
+    )
 
 
 
@@ -341,6 +362,19 @@ def approve_job(id):
         db.session.commit()
 
     return redirect(url_for('admin_jobs'))
+
+
+# Admin  view applications
+@app.route('/admin/applications')
+def admin_applications():
+    if session.get('role') != "admin":
+        return redirect(url_for('admin_login'))
+    
+    applications = Application.query.all()
+    return render_template(
+        'admin_applications.html',
+        applications=applications
+    )
 
 
 # ------------------------- LOGOUT ---------------------
