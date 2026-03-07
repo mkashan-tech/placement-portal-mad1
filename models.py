@@ -47,8 +47,13 @@ class Student(db.Model):
     applications = db.relationship('Application', backref='student', lazy=True)
 
     education = db.Column(db.String(200))
-    resume = db.Column(db.String(200))
+    resume_text = db.Column(db.Text)
+    resume_link = db.Column(db.String(300))
     skills = db.Column(db.String(300))
+    cgpa = db.Column(db.Float)
+    linkedin = db.Column(db.String(300))
+    github = db.Column(db.String(300))
+    location = db.Column(db.String(200))
 
     
 
@@ -68,6 +73,9 @@ class Job(db.Model):
     status = db.Column(db.String(50), default='Pending')
     salary = db.Column(db.Integer)
     deadline = db.Column(db.Date)
+    skills = db.Column(db.String(200))
+    location = db.Column(db.String(200))
+    cgpa_cutoff = db.Column(db.Float)
 
     approved = db.Column(db.Boolean, default=False)
 

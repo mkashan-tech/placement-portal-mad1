@@ -1,17 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h2>Application History</h2>
 
-<table border="1">
-<tr>
-    <th>Job</th>
-    <th>Company</th>
-    <th>Status</th>
-</tr>
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Job</th>
+            <th>Company</th>
+            <th>Status</th>
+        </tr>
+    </thead>
 
-{% for a in applications %}
-<tr>
-    <td>{{ a.job.title }}</td>
-    <td>{{ a.job.company.name }}</td>
-    <td>{{ a.status }}</td>
-</tr>
-{% endfor %}
+    <tbody>
+        {% for a in applications %}
+        <tr>
+            <td>{{ a.job.title }}</td>
+            <td>{{ a.job.company.name }}</td>
+            <td>
+                {% if a.status == "Selected" %}
+                    <span class="badge bg-success">Placed</span>
+                {% elif a.status == "Shortlisted" %}
+                    <span class="badge bg-primary">Shortlisted</span>
+                {% elif a.status == "Rejected" %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% else %}
+                    <span class="badge bg-warning">Applied</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
+
+{% endblock %}

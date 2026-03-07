@@ -1,23 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{role}} Registration</title>
-</head>
-<body>
-    <h2>{{role}} Registration</h2>
+{% extends "base.html" %}
 
-    <form method="POST">
-        <label>Name:</label><br>
-        <input type="text" name="name" required><br><br>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card p-4">
+            <h3 class="text-center mb-3">{{ role }} Registration</h3>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+            <form method="POST">
+                <label>Name</label>
+                <input class="form-control" name="name" required>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+                <br>
 
-        <button type="submit">Register</button>
+                <label>Email</label>
+                <input class="form-control" type="email" name="email" required>
 
-    </form>
-</body>
-</html>
+                <br>
+
+                <label>Password</label>
+                <input class="form-control" type="password" name="password" required>
+
+                <br>
+
+                <button class="btn btn-success w-100" type="submit">
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

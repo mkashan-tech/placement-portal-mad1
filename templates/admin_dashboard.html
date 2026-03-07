@@ -1,12 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h2>Admin Dashboard</h2>
 
-<ul>
-    <li>Total Students: {{data.students}}</li>
-    <li>Total Companies: {{data.companies}}</li>
-    <li>Total Jobs: {{data.jobs}}</li>
-    <li>Total Applications: {{data.applications}}</li>
-</ul>
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <h5>Students</h5>
+            <h3>{{ data.students }}</h3>
+        </div>
+    </div>
 
-<a href = "/admin/companies">Manage Companies</a><br>
-<a href="/admin/students">Manage Students</a><br>
-<a href="/admin/jobs">Manage Jobs</a>
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <h5>Companies</h5>
+            <h3>{{ data.companies }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <h5>Jobs</h5>
+            <h3>{{ data.jobs }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <h5>Applications</h5>
+            <h3>{{ data.applications }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4">
+    <h4 class="mb-3">System Overview</h4>
+    <div style="height:350px">
+        <canvas id="adminChart"></canvas>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('adminChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Students', 'Companies', 'Jobs', 'Applications'],
+            datasets: [{
+                label: 'Total Count',
+                data: [
+                    {{ data.students }},
+                    {{ data.companies }},
+                    {{ data.jobs }},
+                    {{ data.applications }}
+                ],
+                                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(255, 99, 132, 0.6)'
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,14 +1,54 @@
-<h2>Student Profile</h2>
+{% extends "base.html" %}
 
-<form method="POST">
-Education:<br>
-<input name="education" value="{{ student.education }}"><br><br>
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Student Profile</h2>
 
-Skills:<br>
-<input name="skills" value="{{ student.skills }}"><br><br>
+    <form method="POST" class="col-md-8 card p-4 shadow-sm">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Education</label>
+                <input class="form-control" name="education" value="{{ student.education or '' }}" placeholder="e.g. BComG, BS in Data Science">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">CGPA</label>
+                <input class="form-control" type="number" step="0.01" name="cgpa" value="{{ student.cgpa or '' }}" placeholder="0.00">
+            </div>
 
-Resume (file path or name):<br>
-<input name="resume" value="{{ student.resume }}"><br><br>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Contact Number</label>
+                <input class="form-control" type="tel" name="contact" value="{{ student.contact or '' }}" placeholder="10-digit number">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Location</label>
+                <input class="form-control" name="location" value="{{ student.location or '' }}" placeholder="e.g. Prayagraj">
+            </div>
 
-<button type="submit">Update</button>
-</form>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">LinkedIn Profile</label>
+                <input class="form-control" type="url" name="linkedin" value="{{ student.linkedin or '' }}" placeholder="https://linkedin.com/in/username">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">GitHub Profile</label>
+                <input class="form-control" type="url" name="github" value="{{ student.github or '' }}" placeholder="https://github.com/username">
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label class="form-label">Skills</label>
+                <input class="form-control" name="skills" value="{{ student.skills or '' }}" placeholder="e.g. Java, Python, SQL, DSA">
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label class="form-label">Google Drive / Portfolio Link</label>
+                <input type="url" class="form-control" name="resume_link" value="{{ student.resume_link or '' }}" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="col-md-12 mb-4">
+                <label class="form-label">Professional Summary (Text Resume)</label>
+                <textarea class="form-control" name="resume_text" rows="10" 
+                  placeholder="Summarize your skills and experience here...">{{ student.resume_text or '' }}</textarea>
+            </div>
+        </div> <button class="btn btn-primary py-2 px-4">Update Profile</button>
+    </form>
+</div>
+{% endblock %}

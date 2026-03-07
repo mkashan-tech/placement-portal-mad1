@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Placement Portal</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Placement Portal</a>
+
+        <div>
+            {% if not session.get('role') %}
+                <!-- Not logged in -->
+                
+                <a class="btn btn-outline-light btn-sm" href="/student/register">Student Register</a>
+                
+                <a class="btn btn-outline-light btn-sm" href="/company/register">Company Register</a>
+                <a class="btn btn-warning btn-sm" href="/admin/login">Admin Login</a>
+
+            {% elif session.get('role') == 'admin' %}
+                <a class="btn btn-outline-light btn-sm" href="/admin/dashboard">Dashboard</a>
+                <a class="btn btn-outline-light btn-sm" href="/admin/companies">Companies</a>
+                <a class="btn btn-outline-light btn-sm" href="/admin/students">Students</a>
+                <a class="btn btn-outline-light btn-sm" href="/admin/jobs">Jobs</a>
+                <a class="btn btn-outline-light btn-sm" href="/admin/applications">Applications</a>
+                <a class="btn btn-danger btn-sm" href="/logout">Logout</a>
+
+            {% elif session.get('role') == 'company' %}
+                <a class="btn btn-outline-light btn-sm" href="/company/dashboard">Dashboard</a>
+                <a class="btn btn-outline-light btn-sm" href="/company/job/create">Create Job</a>
+                <a class="btn btn-danger btn-sm" href="/logout">Logout</a>
+
+            {% elif session.get('role') == 'student' %}
+                <a class="btn btn-outline-light btn-sm" href="/student/dashboard">Dashboard</a>
+                <a class="btn btn-outline-light btn-sm" href="/student/profile">Profile</a>
+                <a class="btn btn-outline-light btn-sm" href="/student/history">History</a>
+                <a class="btn btn-danger btn-sm" href="/logout">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container mt-4">
+
+    <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+    {% block content %}
+    {% endblock %}
+</div>
+<!-- Bootstrap JS (for navbar, dropdown, modal etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Chart.js (for dashboard charts) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

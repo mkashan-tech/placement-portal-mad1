@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from models import db, Admin, Company, Student, Job, Application
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mad1-secret-key'
@@ -18,7 +19,7 @@ db.init_app(app)
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
-    return "Placement Portal App - MAD I"
+    return render_template("home.html")
 
 
 # ------------------ ADMIN AUTH -------------------
@@ -57,14 +58,28 @@ def admin_dashboard():
 @app.route('/company/register', methods=['GET', 'POST'])
 def company_register():
     if request.method == 'POST':
+
+        
+        existing = Company.query.filter_by(
+            email=request.form['email']
+        ).first()
+
+        if existing:
+            flash("Email already registered.", "warning")
+            return redirect(url_for('company_register'))
+
+        
         company = Company(
             name=request.form['name'],
             email=request.form['email'],
             password=request.form['password']
         )
+
         db.session.add(company)
         db.session.commit()
-        return "Registration submitted. Wait for admin approval."
+
+        flash("Registration submitted. Wait for admin approval.", "info")
+        return redirect(url_for('company_login'))
 
     return render_template('register.html', role='Company')
 
@@ -77,9 +92,13 @@ def company_login():
 
         company = Company.query.filter_by(email=email, password=password).first()
         if company and company.approved and company.is_active:
+            flash("Login successful!", "success")
+
             session['role'] = 'company'
             session['user_id'] = company.id
             return redirect(url_for('company_dashboard'))
+        
+        flash("Invalid credentials.", "danger")
 
     return render_template('login.html', role='Company')
 
@@ -107,15 +126,29 @@ def create_job():
         return "Company not approved by admin."
     
     if request.method == 'POST':
+
+        date_str = request.form['deadline'] 
+        
+        
+        try:
+            deadline_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            # Agar format MM/DD/YYYY hai:
+            deadline_date = datetime.strptime(date_str, '%m/%d/%Y').date()
         job = Job(
             title = request.form['title'],
             description = request.form['description'],
             salary = request.form['salary'],
+            skills = request.form['skills'],
+            cgpa_cutoff = request.form['cgpa_cutoff'],
+            location = request.form['location'],
+            deadline = deadline_date,
             company_id = session.get('user_id'),
             status='Active'
         ) 
         db.session.add(job)
         db.session.commit()
+        flash("Job created successfully!", "success")
 
         return redirect(url_for('company_dashboard'))
     return render_template('create_job.html')
@@ -175,7 +208,9 @@ def student_register():
         ).first()
 
         if existing:
-            return "Email already registered."
+            if existing:
+                flash("Email already registered.", "warning")
+                return redirect(url_for('student_register'))
 
 
         student = Student(
@@ -198,9 +233,12 @@ def student_login():
 
         student = Student.query.filter_by(email=email, password=password).first()
         if student and student.is_active:
+            flash("Login successful!", "success")
             session['role'] = 'student'
             session['user_id'] = student.id
             return redirect(url_for('student_dashboard'))
+
+        flash("Invalid credentials.", "danger")
 
     return render_template('login.html', role='Student')
 
@@ -259,6 +297,9 @@ def student_profile():
         student.education = request.form['education']
         student.skills = request.form['skills']
         student.resume = request.form['resume']
+        student.cgpa = request.form['cgpa']
+        student.linkedin = request.form['linkedin']
+        student.github = request.form['github']
         db.session.commit()
 
         return redirect(url_for('student_dashboard'))
@@ -303,6 +344,7 @@ def approve_company(id):
     if company:
         company.approved = True
         db.session.commit()
+        flash("Company approved successfully!", "success")
 
     return redirect(url_for('admin_companies'))
 

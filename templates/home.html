@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Placement Portal</h1>
+        <p class="lead">Simplifying Campus Recruitment for Everyone</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <div class="col-md-5">
+            <div class="card h-100 border-0 shadow-lg text-center p-4">
+                <div class="card-body">
+                    <h3 class="card-title">Are you a Student?</h3>
+                    <p class="text-muted">Explore opportunities and get placed in top companies.</p>
+                    <a href="/student/login" class="btn btn-primary btn-lg w-100">Student Login</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card h-100 border-0 shadow-lg text-center p-4">
+                <div class="card-body">
+                    <h3 class="card-title">Are you a Company?</h3>
+                    <p class="text-muted">Find the best talent for your organization's growth.</p>
+                    <a href="/company/login" class="btn btn-success btn-lg w-100">Company Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

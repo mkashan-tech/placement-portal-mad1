@@ -1,15 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h2>Company Dashboard</h2>
 
-<a href="/company/job/create">Create Job</a>
+<a class="btn btn-success mb-3" href="/company/job/create">Create Job</a>
 
-<table border="1">
+<table class="table table-bordered">
 <tr>
-
     <th>Title</th>
     <th>Status</th>
     <th>Approved</th>
     <th>Action</th>
-
 </tr>
 
 {% for job in jobs %}
@@ -18,8 +19,9 @@
     <td>{{ job.status }}</td>
     <td>{{ job.approved }}</td>
     <td>
-        <a href="/company/job/{{ job.id }}/applications">Applications</a>
+        <a class="btn btn-info btn-sm" href="/company/job/{{ job.id }}/applications">Applications</a>
     </td>
 </tr>
 {% endfor %}
 </table>
+{% endblock %}

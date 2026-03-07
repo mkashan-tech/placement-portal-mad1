@@ -1,7 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h2>Student Dashboard</h2>
 
-<h3>Available Jobs</h3>
-<table border="1">
+<h4>Available Jobs</h4>
+<table class="table table-bordered">
 <tr>
     <th>Title</th>
     <th>Company</th>
@@ -13,15 +16,14 @@
     <td>{{ job.title }}</td>
     <td>{{ job.company.name }}</td>
     <td>
-        <a href="/student/apply/{{ job.id }}">Apply</a>
+        <a class="btn btn-primary btn-sm" href="/student/apply/{{ job.id }}">Apply</a>
     </td>
 </tr>
 {% endfor %}
 </table>
 
-
-<h3>My Applications</h3>
-<table border="1">
+<h4>My Applications</h4>
+<table class="table table-bordered">
 <tr>
     <th>Job</th>
     <th>Status</th>
@@ -29,8 +31,9 @@
 
 {% for a in applications %}
 <tr>
-    <td>{{ a.job.title }}</td>
+    <td>{{ a.job }}</td>
     <td>{{ a.status }}</td>
 </tr>
 {% endfor %}
 </table>
+{% endblock %}

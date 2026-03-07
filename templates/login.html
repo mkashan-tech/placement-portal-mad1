@@ -1,21 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{role}} Login</title>
-</head>
+{% extends "base.html" %}
 
-<body>
-    <h2>{{role}} Login</h2>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border p-4">
+                <h3 class="text-center mb-4">{{ role }} Login</h3>
 
-    <form method = 'POST'>
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label>Email Address</label>
+                        <input class="form-control" type="email" name="email" required>
+                    </div>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+                    <div class="mb-3">
+                        <label>Password</label>
+                        <input class="form-control" type="password" name="password" required>
+                    </div>
 
-        <button type="submit">Login</button>
-    </form>
-
-</body>
-</html>
+                    {% if role == 'Company' %}
+                        <button class="btn btn-success w-100" type="submit">Login</button>
+                    {% elif role == 'Admin' %}
+                        <button class="btn btn-warning w-100" type="submit">Login as Admin</button>
+                    {% else %}
+                        <button class="btn btn-primary w-100" type="submit">Login</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
