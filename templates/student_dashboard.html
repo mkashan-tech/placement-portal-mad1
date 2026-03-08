@@ -8,6 +8,8 @@
 <tr>
     <th>Title</th>
     <th>Company</th>
+    <th>Description</th>
+    <th>Skills</th>
     <th>Action</th>
 </tr>
 
@@ -15,8 +17,14 @@
 <tr>
     <td>{{ job.title }}</td>
     <td>{{ job.company.name }}</td>
+    <td>{{ job.description }}</td>
+    <td>{{ job.skills }}</td>
     <td>
+    {% if job.id in applied_job_ids %}
+        <button class="btn btn-secondary btn-sm" disabled>Applied</button>
+    {% else %}
         <a class="btn btn-primary btn-sm" href="/student/apply/{{ job.id }}">Apply</a>
+    {% endif %}
     </td>
 </tr>
 {% endfor %}
@@ -25,13 +33,17 @@
 <h4>My Applications</h4>
 <table class="table table-bordered">
 <tr>
-    <th>Job</th>
+    <th>Job ID</th>
+    <th>Job Title</th>
+    <th>Company Name</th>
     <th>Status</th>
 </tr>
 
 {% for a in applications %}
 <tr>
     <td>{{ a.job }}</td>
+    <td>{{ a.job.title }}</td>
+    <td>{{ a.job.company.name }}</td>
     <td>{{ a.status }}</td>
 </tr>
 {% endfor %}

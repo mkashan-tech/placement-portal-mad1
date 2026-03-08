@@ -4,19 +4,23 @@
 <h2>Placement Drives</h2>
 
 <table class="table table-striped table-bordered">
-<thead class="table-dark"></thead>
+<thead class="table-dark">
 <tr>
     <th>Title</th>
     <th>Company</th>
+    <th>Approval</th>
     <th>Status</th>
     <th>Action</th>
 </tr>
+</thead>
 
 <tbody>
 {% for j in jobs %}
 <tr>
     <td>{{ j.title }}</td>
     <td>{{ j.company.name }}</td>
+
+    <!-- Approval Status -->
     <td>
         {% if j.approved %}
             <span class="badge bg-success">Approved</span>
@@ -24,14 +28,58 @@
             <span class="badge bg-warning">Pending</span>
         {% endif %}
     </td>
+
+    <!-- Active / Closed Status -->
     <td>
-        <a class="btn btn-sm btn-primary" href="/admin/job/{{ j.id }}/approve">
-            Approve
-        </a>
+        {% if j.status == "Active" %}
+            <span class="badge bg-success">Active</span>
+        {% else %}
+            <span class="badge bg-danger">Closed</span>
+        {% endif %}
     </td>
 
+    <!-- Actions -->
+    <td>
+
+        <!-- Approve Toggle -->
+        {% if not j.approved %}
+            <a class="btn btn-sm btn-primary"
+               href="/admin/job/{{ j.id }}/approve">
+               Approve
+            </a>
+        {% else %}
+            <button class="btn btn-sm btn-secondary" disabled>
+                Approved
+            </button>
+            <a class="btn btn-sm btn-warning"
+               href="/admin/job/{{ j.id }}/unapprove">
+               Unapprove
+            </a>
+        {% endif %}
+
+        <!-- Active / Closed Toggle -->
+        {% if j.status == "Active" %}
+            <button class="btn btn-sm btn-secondary" disabled>
+                Active
+            </button>
+            <a class="btn btn-sm btn-danger"
+               href="/admin/job/{{ j.id }}/close">
+               Close
+            </a>
+        {% else %}
+            <a class="btn btn-sm btn-success"
+               href="/admin/job/{{ j.id }}/reopen">
+               Reopen
+            </a>
+            <button class="btn btn-sm btn-secondary" disabled>
+                Closed
+            </button>
+        {% endif %}
+
+    </td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
+
 {% endblock %}

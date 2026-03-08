@@ -17,11 +17,63 @@
 <tr>
     <td>{{ job.title }}</td>
     <td>{{ job.status }}</td>
-    <td>{{ job.approved }}</td>
     <td>
-        <a class="btn btn-info btn-sm" href="/company/job/{{ job.id }}/applications">Applications</a>
+        {% if job.approved %}
+            <span class="badge bg-success">Approved</span>
+        {% else %}
+            <span class="badge bg-warning">Pending</span>
+        {% endif %}
+    </td>
+    <td>
+        <a class="btn btn-info btn-sm"
+           href="/company/job/{{ job.id }}/applications">
+           Applications
+        </a>
     </td>
 </tr>
 {% endfor %}
 </table>
+
+<div class="card p-4 mt-4">
+    <h4 class="mb-3">Applications per Job</h4>
+
+    {% if job_titles %}
+        <canvas id="companyChart"></canvas>
+    {% else %}
+        <p class="text-muted">No jobs posted yet.</p>
+    {% endif %}
+</div>
+
+{% if job_titles %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('companyChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ job_titles | tojson }},
+            datasets: [{
+                label: 'Applications',
+                data: {{ application_counts | tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0   // integers only
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+
 {% endblock %}

@@ -8,11 +8,10 @@
 <tr>
     <th>Name</th>
     <th>Email</th>
-    <th>Approved</th>
-    <th>Active</th>
+    <th>Approval</th>
+    <th>Status</th>
     <th>Action</th>
 </tr>
-
 </thead>
 
 <tbody>
@@ -20,6 +19,8 @@
 <tr>
     <td>{{ c.name }}</td>
     <td>{{ c.email }}</td>
+
+    <!-- Approval -->
     <td>
         {% if c.approved %}
             <span class="badge bg-success">Approved</span>
@@ -27,6 +28,8 @@
             <span class="badge bg-warning">Pending</span>
         {% endif %}
     </td>
+
+    <!-- Active Status -->
     <td>
         {% if c.is_active %}
             <span class="badge bg-success">Active</span>
@@ -34,12 +37,45 @@
             <span class="badge bg-danger">Inactive</span>
         {% endif %}
     </td>
+
+    <!-- Actions -->
     <td>
-        <a class="btn btn-sm btn-primary" href="/admin/company/{{ c.id }}/approve">Approve</a>
-        <a class="btn btn-sm btn-danger" href="/admin/company/{{ c.id }}/deactivate">Deactivate</a>
+
+        <!-- Approve -->
+        {% if not c.approved %}
+            <a class="btn btn-sm btn-primary"
+               href="/admin/company/{{ c.id }}/approve">
+               Approve
+            </a>
+        {% else %}
+            <button class="btn btn-sm btn-secondary" disabled>
+                Approved
+            </button>
+        {% endif %}
+
+        <!-- Activate / Deactivate Toggle -->
+        {% if c.is_active %}
+            <button class="btn btn-sm btn-secondary" disabled>
+                Active
+            </button>
+            <a class="btn btn-sm btn-danger"
+               href="/admin/company/{{ c.id }}/deactivate">
+               Deactivate
+            </a>
+        {% else %}
+            <a class="btn btn-sm btn-success"
+               href="/admin/company/{{ c.id }}/activate">
+               Activate
+            </a>
+            <button class="btn btn-sm btn-secondary" disabled>
+                Inactive
+            </button>
+        {% endif %}
+
     </td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
+
 {% endblock %}

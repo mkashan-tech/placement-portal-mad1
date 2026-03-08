@@ -7,6 +7,7 @@
     <thead class="table-dark">
         <tr>
             <th>Student</th>
+            <th>Profile</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
@@ -17,24 +18,34 @@
         <tr>
             <td>{{ a.student.name }}</td>
             <td>
+                <a class="btn btn-sm btn-dark"
+                  href="/company/student/{{ a.student.id }}">
+                   View Profile
+                </a>
+            </td>
+            <td>
                 <span class="badge bg-secondary">{{ a.status }}</span>
             </td>
             <td>
-                <a class="btn btn-sm btn-primary"
-                    href="/company/application/{{ a.id }}/shortlist">
-                    Shortlist
-                </a>
 
-                <a class="btn btn-sm btn-success"
-                    href="/company/application/{{ a.id }}/select">
-                    Select
-                </a>
+                {% if a.status == 'Applied' %}
+                    <a class="btn btn-sm btn-primary" href="/company/application/{{ a.id }}/shortlist">Shortlist</a>
+                    <a class="btn btn-sm btn-success" href="/company/application/{{ a.id }}/select">Select</a>
+                    <a class="btn btn-sm btn-danger" href="/company/application/{{ a.id }}/reject">Reject</a>
 
-                <a class="btn btn-sm btn-danger"
-                    href="/company/application/{{ a.id }}/reject">
-                    Reject
-                </a>
-                    
+                {% elif a.status == 'Shortlisted' %}
+                    <span class="badge bg-primary">Shortlisted</span>
+                    <a class="btn btn-sm btn-success" href="/company/application/{{ a.id }}/select">Select</a>
+                    <a class="btn btn-sm btn-danger" href="/company/application/{{ a.id }}/reject">Reject</a>
+
+                {% elif a.status == 'Selected' %}
+                    <span class="badge bg-success">Selected</span>
+
+                {% elif a.status == 'Rejected' %}
+                    <span class="badge bg-danger">Rejected</span>
+
+                {% endif %}
+
             </td>
         </tr>
         {% endfor %}

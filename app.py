@@ -25,6 +25,14 @@ def home():
 # ------------------ ADMIN AUTH -------------------
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
+
+    if session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    elif session.get('role') == 'student':
+        return redirect(url_for('student_dashboard'))
+    elif session.get('role') == 'company':
+        return redirect(url_for('company_dashboard'))
+    
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -86,6 +94,14 @@ def company_register():
 
 @app.route('/company/login', methods=['GET', 'POST'])
 def company_login():
+
+    if session.get('role') == 'student':
+        return redirect(url_for('student_dashboard'))
+    elif session.get('role') == 'company':
+        return redirect(url_for('company_dashboard'))
+    elif session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -107,13 +123,24 @@ def company_login():
 def company_dashboard():
     if session.get('role') != 'company':
         return redirect(url_for('company_login'))
-    
 
     company_id = session.get('user_id')
     jobs = Job.query.filter_by(company_id=company_id).all()
 
-    return render_template('company_dashboard.html', jobs=jobs)
+    job_titles = []
+    application_counts = []
 
+    for job in jobs:
+        job_titles.append(job.title)
+        count = Application.query.filter_by(job_id=job.id).count()
+        application_counts.append(count)
+
+    return render_template(
+        'company_dashboard.html',
+        jobs=jobs,
+        job_titles=job_titles,
+        application_counts=application_counts
+    )
 
 
 @app.route('/company/job/create', methods=['GET', 'POST'])
@@ -148,7 +175,7 @@ def create_job():
         ) 
         db.session.add(job)
         db.session.commit()
-        flash("Job created successfully!", "success")
+        flash("Job created successfully, awaiting admin approval!", "success")
 
         return redirect(url_for('company_dashboard'))
     return render_template('create_job.html')
@@ -198,6 +225,16 @@ def close_job(id):
     return redirect(url_for('company_dashboard'))
 
 
+# ========== Can view Student profile=======
+@app.route('/company/student/<int:student_id>')
+def view_applicant_profile(student_id):
+    if session.get('role') != 'company':
+        return redirect(url_for('company_login'))
+
+    student = Student.query.get(student_id)
+    return render_template('student_profile_view.html', student=student)
+
+
 
 # ----------------------- STUDENT AUTH --------------------
 @app.route('/student/register', methods=['GET', 'POST'])
@@ -220,6 +257,7 @@ def student_register():
         )
         db.session.add(student)
         db.session.commit()
+        flash("Registration successful!", "success")
         return redirect(url_for('student_login'))
 
     return render_template('register.html', role='Student')
@@ -227,6 +265,14 @@ def student_register():
 
 @app.route('/student/login', methods=['GET', 'POST'])
 def student_login():
+
+    if session.get('role') == 'student':
+        return redirect(url_for('student_dashboard'))
+    elif session.get('role') == 'company':
+        return redirect(url_for('company_dashboard'))
+    elif session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -248,16 +294,19 @@ def student_dashboard():
     if session.get('role') != 'student':
         return redirect(url_for('student_login'))
     
+    student_id = session.get('user_id')
+    
     jobs = Job.query.filter_by(approved=True, status="Active").all()
 
     applications = Application.query.filter_by(
-        student_id=session.get('user_id')
-    ).all()
-
+        student_id=student_id).all()
+    
+    applied_job_ids = [a.job_id for a in applications]
     return render_template(
         'student_dashboard.html',
         jobs=jobs,
-        applications=applications
+        applications=applications,
+        applied_job_ids=applied_job_ids
     )
 
 # Apply for Job (Core Feature)
@@ -296,8 +345,13 @@ def student_profile():
     if request.method == 'POST':
         student.education = request.form['education']
         student.skills = request.form['skills']
-        student.resume = request.form['resume']
-        student.cgpa = request.form['cgpa']
+        student.resume_text = request.form['resume_text']
+        student.resume_link = request.form['resume_link']
+        cgpa_val = request.form.get('cgpa')
+        if cgpa_val and cgpa_val.strip(): 
+            student.cgpa = float(cgpa_val)
+        else:
+            student.cgpa = None
         student.linkedin = request.form['linkedin']
         student.github = request.form['github']
         db.session.commit()
@@ -362,6 +416,19 @@ def deactivate_company(id):
     return redirect(url_for('admin_companies'))
 
 
+@app.route('/admin/company/<int:id>/activate')
+def activate_company(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    company = Company.query.get(id)
+    if company:
+        company.is_active = True
+        db.session.commit()
+
+    return redirect(url_for('admin_companies'))
+
+
 @app.route('/admin/students')
 def admin_students():
     if session.get('role') != 'admin':
@@ -379,6 +446,19 @@ def deactivate_student(id):
     student = Student.query.get(id)
     if student:
         student.is_active = False
+        db.session.commit()
+
+    return redirect(url_for('admin_students'))
+
+
+@app.route('/admin/student/<int:id>/activate')
+def activate_student(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    student = Student.query.get(id)
+    if student:
+        student.is_active = True
         db.session.commit()
 
     return redirect(url_for('admin_students'))
@@ -405,6 +485,43 @@ def approve_job(id):
 
     return redirect(url_for('admin_jobs'))
 
+@app.route('/admin/job/<int:id>/unapprove')
+def unapprove_job(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    job = Job.query.get(id)
+    if job:
+        job.approved = False
+        db.session.commit()
+
+    return redirect(url_for('admin_jobs'))
+
+
+@app.route('/admin/job/<int:id>/close')
+def close_job_admin(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    job = Job.query.get(id)
+    if job:
+        job.status = "Closed"
+        db.session.commit()
+
+    return redirect(url_for('admin_jobs'))
+
+@app.route('/admin/job/<int:id>/reopen')
+def reopen_job_admin(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    job = Job.query.get(id)
+    if job:
+        job.status = "Active"
+        db.session.commit()
+
+    return redirect(url_for('admin_jobs'))
+
 
 # Admin  view applications
 @app.route('/admin/applications')
@@ -417,6 +534,15 @@ def admin_applications():
         'admin_applications.html',
         applications=applications
     )
+
+# ------------Admin can view student profile------------
+@app.route('/admin/student/<int:id>/profile')
+def admin_view_student(id):
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin_login'))
+
+    student = Student.query.get(id)
+    return render_template('student_profile_view.html', student=student)
 
 
 # ------------------------- LOGOUT ---------------------
@@ -438,3 +564,5 @@ if __name__ == '__main__':
             db.session.commit()
 
     app.run(debug=True)
+
+
