@@ -29,19 +29,23 @@
         {% endif %}
     </td>
 
-    <!-- Active / Closed Status -->
+    <!-- Job Status -->
     <td>
         {% if j.status == "Active" %}
             <span class="badge bg-success">Active</span>
-        {% else %}
+        {% elif j.status == "Close Requested" %}
+            <span class="badge bg-warning text-dark">Close Requested</span>
+        {% elif j.status == "Closed" %}
             <span class="badge bg-danger">Closed</span>
+        {% else %}
+            <span class="badge bg-secondary">{{ j.status }}</span>
         {% endif %}
     </td>
 
     <!-- Actions -->
     <td>
 
-        <!-- Approve Toggle -->
+        <!-- APPROVAL CONTROLS -->
         {% if not j.approved %}
             <a class="btn btn-sm btn-primary"
                href="/admin/job/{{ j.id }}/approve">
@@ -57,23 +61,24 @@
             </a>
         {% endif %}
 
-        <!-- Active / Closed Toggle -->
+        <!-- STATUS CONTROLS -->
         {% if j.status == "Active" %}
-            <button class="btn btn-sm btn-secondary" disabled>
-                Active
-            </button>
             <a class="btn btn-sm btn-danger"
                href="/admin/job/{{ j.id }}/close">
                Close
             </a>
-        {% else %}
+
+        {% elif j.status == "Close Requested" %}
+            <a class="btn btn-sm btn-danger"
+               href="/admin/job/{{ j.id }}/close">
+               Approve Close
+            </a>
+
+        {% elif j.status == "Closed" %}
             <a class="btn btn-sm btn-success"
                href="/admin/job/{{ j.id }}/reopen">
                Reopen
             </a>
-            <button class="btn btn-sm btn-secondary" disabled>
-                Closed
-            </button>
         {% endif %}
 
     </td>
